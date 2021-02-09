@@ -1,0 +1,20 @@
+(ns sicp.chapter1.solution-1-12-test
+  (:require [clojure.test :refer :all])
+  (:require [sicp.chapter1.solution-1-12 :refer [pascal]]))
+
+(deftest pascal-test
+  (is (= 1 (pascal 1 1)))
+  (is (= 1 (pascal 2 1)))
+  (is (= 1 (pascal 2 2)))
+  (is (= 1 (pascal 3 1)))
+  (is (= 2 (pascal 3 2)))
+  (is (= 1 (pascal 3 3)))
+  (is (= 1 (pascal 4 1)))
+  (is (= 3 (pascal 4 2)))
+  (is (= 3 (pascal 4 3)))
+  (is (= 1 (pascal 4 4)))
+  (is (= 1 (pascal 5 1)))
+  (is (= 4 (pascal 5 2)))
+  (is (= 6 (pascal 5 3)))
+  (is (= 4 (pascal 5 4)))
+  (is (= 1 (pascal 5 5))))
