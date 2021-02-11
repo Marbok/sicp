@@ -1,6 +1,6 @@
-(ns sicp.chapter1.solution-1-17-test
+(ns sicp.chapter1.solution-1-18-test
   (:require [clojure.test :refer :all])
-  (:require [sicp.chapter1.solution-1-17 :refer [mult]]))
+  (:require [sicp.chapter1.solution-1-18 :refer [mult]]))
 
 (deftest mult-test
   (is (= 0 (mult 5 0)))
