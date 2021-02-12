@@ -2,8 +2,6 @@
   (:require [clojure.test :refer :all])
   (:require [sicp.chapter1.solution-1-30 :refer [sum]]))
 
-(defn indentity [x] x)
-
 (defn cube [x]
   (* x x x))
 
