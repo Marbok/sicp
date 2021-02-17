@@ -9,7 +9,8 @@
 
 (defn cont-frac [n d k]
   (let [iter (fn [i acc]
-               (if (= i k)
+               (if (= i 0)
                  acc
-                 (recur (inc i) (/ (n i) (+ (d i) acc)))))]
-    (iter 1 (/ (n 1) (d 1)))))
+                 (recur (dec i)
+                        (/ (n i) (+ (d i) acc)))))]
+    (iter k 0)))
