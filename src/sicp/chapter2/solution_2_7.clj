@@ -6,5 +6,5 @@
 
 (defn make-interval [a b]
   (reify Interval
-    (lower-bound [_] a)
-    (upper-bound [_] b)))
+    (lower-bound [_] (min a b))
+    (upper-bound [_] (max a b))))
