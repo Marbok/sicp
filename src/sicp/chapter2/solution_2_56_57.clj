@@ -1,4 +1,4 @@
-(ns sicp.chapter2.symbol-diff)
+(ns sicp.chapter2.solution-2-56-57)
 
 (defn variable? [exp]
   (symbol? exp))
@@ -22,7 +22,7 @@
   (second exp))
 
 (defn augend [exp]
-  (last exp))
+  (reduce make-sum (next (next exp))))
 
 (defn sum? [exp]
   (and (list? exp) (= (first exp) '+)))
@@ -44,6 +44,23 @@
   (second exp))
 
 (defn multiplicand [exp]
+  (reduce make-product (next (next exp))))
+
+;; Exponentiation
+
+(defn make-exponentiation [base exponent]
+  (cond
+    (= exponent 1) base
+    (= exponent 0) 1
+    :else (list '** base exponent)))
+
+(defn exponentiation? [exp]
+  (and (list? exp) (= (first exp) '**)))
+
+(defn base [exp]
+  (second exp))
+
+(defn exponent [exp]
   (last exp))
 
 ;; derivation
@@ -59,4 +76,9 @@
                                    (deriv (multiplicand exp) var))
                      (make-product (deriv (multiplier exp) var)
                                    (multiplicand exp)))
+    (exponentiation? exp) (make-product
+                            (make-product (exponent exp)
+                                          (make-exponentiation (base exp)
+                                                               (- (exponent exp) 1)))
+                            (deriv (base exp) var))
     :else (throw IllegalArgumentException)))
