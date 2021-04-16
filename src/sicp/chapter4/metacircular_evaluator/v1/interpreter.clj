@@ -1,4 +1,4 @@
-(ns sicp.chapter4.metacircular-evaluator.interpreter
+(ns sicp.chapter4.metacircular-evaluator.v1.interpreter
   (:import (clojure.lang Cons)))
 
 (declare inter-eval)

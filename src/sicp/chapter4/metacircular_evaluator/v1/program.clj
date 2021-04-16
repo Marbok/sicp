@@ -1,5 +1,5 @@
-(ns sicp.chapter4.metacircular-evaluator.program
-  (:require [sicp.chapter4.metacircular-evaluator.interpreter :refer [inter-eval
+(ns sicp.chapter4.metacircular-evaluator.v1.program
+  (:require [sicp.chapter4.metacircular-evaluator.v1.interpreter :refer [inter-eval
                                                                       compound-procedure?
                                                                       procedure-parameters
                                                                       procedure-body
