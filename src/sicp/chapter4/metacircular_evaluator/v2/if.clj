@@ -1,5 +1,5 @@
 (ns sicp.chapter4.metacircular-evaluator.v2.if
-  (:require [sicp.chapter4.metacircular-evaluator.v2.interpreter :refer [inter-eval]]
+  (:require [sicp.chapter4.metacircular-evaluator.v2.interpreter :refer [analyze]]
             [sicp.chapter4.metacircular-evaluator.v2.operation-table :refer [add-operation]]))
 
 
@@ -16,10 +16,14 @@
 (defn make-if [predicate consequent alternative]
   (list 'if predicate consequent alternative))
 
-(defn eval-if [exp env]
-  (if (true? (inter-eval (if-predicate exp) env))
-    (inter-eval (if-consequent exp) env)
-    (inter-eval (if-alternative exp) env)))
+(defn analyze-if [exp]
+  (let [pproc (analyze (if-predicate exp))
+        cproc (analyze (if-consequent exp))
+        aproc (analyze (if-alternative exp))]
+    (fn [env]
+      (if (true? (pproc env))
+        (cproc env)
+        (aproc env)))))
 
 (defn install-if []
-  (add-operation 'if eval-if))
+  (add-operation 'if analyze-if))

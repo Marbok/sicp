@@ -35,8 +35,7 @@
   (do
     (println)
     (println string)
-    (println)
-    ))
+    (println)))
 (defn user-print [object]
   (if (compound-procedure? object)
     (println 'compound-procedure

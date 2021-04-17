@@ -1,4 +1,4 @@
-(ns sicp.chapter4.metacircular-evaluator.v2.environment))
+(ns sicp.chapter4.metacircular-evaluator.v2.environment)
 
 (defn enclosing-environment [env] (rest env))
 (defn first-frame [env] (first env))
@@ -14,7 +14,8 @@
 (defn add-binding-to-frame! [var val frame]
   (do
     (reset! (first frame) (cons (atom var) @(first frame)))
-    (reset! (second frame) (cons (atom val) @(second frame)))))
+    (reset! (second frame) (cons (atom val) @(second frame)))
+    'ok))
 
 (defn extend-environment [vars vals base-env]
   (if (= (count vars) (count vals))

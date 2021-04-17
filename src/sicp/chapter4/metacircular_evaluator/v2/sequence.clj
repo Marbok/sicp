@@ -1,11 +1,9 @@
 (ns sicp.chapter4.metacircular-evaluator.v2.sequence
-  (:require [sicp.chapter4.metacircular-evaluator.v2.interpreter :refer [inter-eval]]
+  (:require [sicp.chapter4.metacircular-evaluator.v2.interpreter :refer [analyze]]
             [sicp.chapter4.metacircular-evaluator.v2.operation-table :refer [add-operation]]))
 
-(defn begin-actions [exp] (rest exp))
 (defn last-exp? [seq] (empty? (rest seq)))
 (defn first-exp [seq] (first seq))
-(defn rest-exps [seq] (rest seq))
 (defn make-begin [seq] (cons 'begin seq))
 (defn sequence->exp [seq]
   (cond
@@ -13,15 +11,18 @@
     (last-exp? seq) (first-exp seq)
     :else (make-begin seq)))
 
-(defn eval-sequence [exps env]
-  (cond
-    (last-exp? exps) (inter-eval (first-exp exps) env)
-    :else (do
-            (inter-eval (first-exp exps) env)
-            (eval-sequence (rest-exps exps) env))))
-
-(defn eval-begin [exp env]
-  (eval-sequence (begin-actions exp) env))
+(defn analyze-sequence [exps]
+  (letfn [(sequentially [proc1 proc2]
+            (fn [env] (proc1 env) (proc2 env)))
+          (loop [first-proc rest-procs]
+            (if (empty? rest-procs)
+              first-proc
+              (loop (sequentially first-proc (first rest-procs))
+                    (rest rest-procs))))]
+    (let [procs (map analyze exps)]
+      (if (empty? procs)
+        (throw (IllegalStateException. "Empty sequence: ANALYZE"))
+        (loop (first procs) (rest procs))))))
 
 (defn install-begin []
-  (add-operation 'begin eval-begin))
+  (add-operation 'begin analyze-sequence))

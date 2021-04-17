@@ -1,7 +1,7 @@
 (ns sicp.chapter4.metacircular-evaluator.v2.cond
   (:require [sicp.chapter4.metacircular-evaluator.v2.if :refer [make-if]]
             [sicp.chapter4.metacircular-evaluator.v2.sequence :refer [sequence->exp]]
-            [sicp.chapter4.metacircular-evaluator.v2.interpreter :refer [inter-eval]]
+            [sicp.chapter4.metacircular-evaluator.v2.interpreter :refer [analyze]]
             [sicp.chapter4.metacircular-evaluator.v2.operation-table :refer [add-operation]]))
 
 
@@ -24,8 +24,8 @@
                  (expand-clauses rest))))))
 (defn cond->if [exp] (expand-clauses (cond-clauses exp)))
 
-(defn eval-cond [exp env]
-  (inter-eval (cond->if exp) env))
+(defn analyze-cond [exp]
+  (analyze (cond->if exp)))
 
 (defn install-cond []
-  (add-operation 'cond eval-cond))
+  (add-operation 'cond analyze-cond))

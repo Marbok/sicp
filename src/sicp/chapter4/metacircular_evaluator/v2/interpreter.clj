@@ -1,11 +1,12 @@
 (ns sicp.chapter4.metacircular-evaluator.v2.interpreter
-  (:require [sicp.chapter4.metacircular-evaluator.v2.variable :refer [lookup-variable-value variable? define-variable!]]
+  (:require [sicp.chapter4.metacircular-evaluator.v2.variable :refer [variable? analyze-variable]]
             [sicp.chapter4.metacircular-evaluator.v2.operation-table :refer [get-operation]]
-            [sicp.chapter4.metacircular-evaluator.v2.environment :refer [the-empty-environment extend-environment]]
-            [sicp.chapter4.metacircular-evaluator.v2.procedure :refer [inter-apply]]))
+            [sicp.chapter4.metacircular-evaluator.v2.environment :refer [extend-environment]]
+            [sicp.chapter4.metacircular-evaluator.v2.procedure :refer [primitive-procedure? apply-primitive-procedure
+                                                                       compound-procedure? procedure-body procedure-parameters
+                                                                       procedure-environment]]))
 
-(declare inter-eval)
-(declare tagged-list?)
+(declare analyze)
 
 (defn self-evaluating? [exp]
   (cond
@@ -20,28 +21,40 @@
 (defn has-operation? [exp]
   (not (nil? (get-operation (get-tag exp)))))
 
-(defn execute [exp env]
-  ((get-operation (get-tag exp)) exp env))
-
 (defn application? [exp] (seq? exp))
 (defn operator [exp] (first exp))
 (defn operands [exp] (rest exp))
-(defn no-operands? [ops] (empty? ops))
-(defn first-operand [ops] (first ops))
-(defn rest-operands [ops] (rest ops))
 
-(defn list-of-values [exps env]
-  (if (no-operands? exps)
-    '()
-    (cons (inter-eval (first-operand exps) env)
-          (list-of-values (rest-operands exps) env))))
+(defn analyze-self-evaluating [exp]
+  (fn [_] exp))
+
+(defn execute-analysis [exp]
+  ((get-operation (get-tag exp)) exp))
+
+(defn execute-application [proc args]
+  (cond
+    (primitive-procedure? proc) (apply-primitive-procedure proc args)
+    (compound-procedure? proc) ((procedure-body proc) (extend-environment
+                                                        (procedure-parameters proc)
+                                                        args
+                                                        (procedure-environment proc)))
+    :else (throw (IllegalStateException. (str "Unknown procedure type: EXECUTE-APPLICATION" proc)))))
+
+(defn analyze-application [exp]
+  (let [fproc (analyze (operator exp))
+        aprocs (map analyze (operands exp))]
+    (fn [env]
+      (execute-application (fproc env)
+                           (map (fn [aproc] (aproc env)) aprocs)))))
+
+(defn analyze [exp]
+  (cond
+    (self-evaluating? exp) (analyze-self-evaluating exp)
+    (variable? exp) (analyze-variable exp)
+    (has-operation? exp) (execute-analysis exp)
+    (application? exp) (analyze-application exp)
+    :else (throw (IllegalArgumentException. (str "Unknown expression type: EVAL" exp)))))
 
 (defn inter-eval [exp env]
-  (cond
-    (self-evaluating? exp) exp
-    (variable? exp) (lookup-variable-value exp env)
-    (has-operation? exp) (execute exp env)
-    (application? exp) (inter-apply (inter-eval (operator exp) env)
-                                    (list-of-values (operands exp) env))
-    :else (throw (IllegalArgumentException. (str "Unknown expression type: EVAL" exp)))))
+  ((analyze exp) env))
 

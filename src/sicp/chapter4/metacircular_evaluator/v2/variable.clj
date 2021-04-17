@@ -29,7 +29,9 @@
                 (let [frame (first-frame env)]
                   (scan (frame-variables frame)
                         (frame-values frame))))))]
-    (env-loop env)))
+    (do
+      (env-loop env)
+      'ok)))
 
 (defn define-variable! [var val env]
   (let [frame (first-frame env)]
@@ -38,7 +40,13 @@
                 (empty? vars) (add-binding-to-frame! var val frame)
                 (= var @(first vars)) (reset! (first vals) val)
                 :else (scan (rest vars) (rest vals))))]
-      (scan (frame-variables frame) (frame-values frame)))))
+      (do
+        (scan (frame-variables frame) (frame-values frame))
+        'ok))))
 
 (defn variable? [exp]
   (symbol? exp))
+
+(defn analyze-variable [exp]
+  (fn [env]
+    (lookup-variable-value exp env)))
